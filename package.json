@@ -1,0 +1,30 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@commercetools/importapi-sdk": "^5.2.0",
+    "@commercetools/platform-sdk": "^7.6.0",
+    "@commercetools/sdk-client-v2": "^2.4.0",
+    "apollo-server-express": "^3.13.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "graphql": "^16.8.1",
+    "install": "^0.13.0",
+    "npm": "^10.5.0"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.21",
+    "@types/node-fetch": "^2.6.11",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2"
+  }
+}
