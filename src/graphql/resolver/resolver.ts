@@ -44,9 +44,9 @@ export const resolvers = {
     }
   }
 };
-let currentId = 5; // Start with 5 so that the first generated ID will be 6
+let currentId = 5;
 
 function generateId() {
-  currentId += 1; // Increment the current ID by 1
-  return currentId.toString(); // Return the new ID
+  currentId += 1; 
+  return currentId.toString(); 
 }
