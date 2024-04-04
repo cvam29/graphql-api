@@ -4,15 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "ts.check": "tsc --project tsconfig.json"
-    
+  "start": "nodemon src/index.ts",
+  "build": "rimraf dist && tsc",
+  "ts.check": "tsc --project tsconfig.json",
+  "add-build": "git add dist"
   },
   "pre-commit": [
-		"ts.check",
-		"build"
-	
-	],
+    "ts.check",
+    "build",
+    "add-build"
+],
   "keywords": [],
   "author": "",
   "license": "ISC",
