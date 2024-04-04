@@ -5,13 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf dist && tsc",
-    "ts.check": "tsc --project tsconfig.json",
+    "ts.check": "tsc --project tsconfig.json"
     
   },
   "pre-commit": [
 		"ts.check",
-		"build",
-		"add-build"
+		"build"
+	
 	],
   "keywords": [],
   "author": "",
