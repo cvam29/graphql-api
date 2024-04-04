@@ -5,13 +5,23 @@ import {resolvers} from './graphql/resolver/resolver'
 import cors from 'cors'
 import { ApolloServer } from '@apollo/server';
 import { typeDefs } from './graphql/schema/schema';
+import {ApolloServerPluginLandingPageProductionDefault,ApolloServerPluginLandingPageLocalDefault} from '@apollo/server/plugin/landingPage/default'
 
 async function startServer() {
     const app = express();
     const server = new ApolloServer({
     typeDefs,
-    resolvers
-    })
+    resolvers,
+    plugins: [
+        // Install a landing page plugin based on NODE_ENV
+        process.env.NODE_ENV === 'production'
+          ? ApolloServerPluginLandingPageProductionDefault({
+              graphRef: 'my-graph-id@my-graph-variant',
+              footer: false,
+            })
+          : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+      ],
+    });
     
     app.use(express.json())
     app.use(cors());
