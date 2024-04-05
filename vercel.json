@@ -12,5 +12,11 @@
             "src": "/(.*)",
             "dest": "dist/server.js"
         }
-    ]
+    ],
+    "rewrites": [
+        {
+          "source": "/",
+          "destination": "/graphql"
+        }
+      ]
 }
