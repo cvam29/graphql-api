@@ -25,9 +25,10 @@ function startServer() {
         const server = new server_1.ApolloServer({
             typeDefs: schema_1.typeDefs,
             resolvers: resolver_1.resolvers,
+            introspection: true,
             plugins: [
                 (0, server_plugin_landing_page_graphql_playground_1.ApolloServerPluginLandingPageGraphQLPlayground)()
-            ],
+            ]
         });
         app.use(express_1.default.json());
         app.use((0, cors_1.default)());
