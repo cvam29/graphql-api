@@ -6,6 +6,7 @@ import cors from 'cors'
 import { ApolloServer } from '@apollo/server';
 import { typeDefs } from './graphql/schema/schema';
 import {ApolloServerPluginLandingPageProductionDefault,ApolloServerPluginLandingPageLocalDefault} from '@apollo/server/plugin/landingPage/default'
+import { ApolloServerPluginLandingPageGraphQLPlayground } from '@apollo/server-plugin-landing-page-graphql-playground';
 
 async function startServer() {
     const app = express();
@@ -13,15 +14,15 @@ async function startServer() {
     typeDefs,
     resolvers,
     plugins: [
-        // Install a landing page plugin based on NODE_ENV
-        process.env.NODE_ENV === 'production'
-          ? ApolloServerPluginLandingPageProductionDefault({
-              graphRef: 'my-graph-id@my-graph-variant',
-              footer: false,
-            })
-          : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+        
+          ApolloServerPluginLandingPageGraphQLPlayground()
+       
+        
+         
       ],
-    });
+     
+    },
+    );
     
     app.use(express.json())
     app.use(cors());

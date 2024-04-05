@@ -18,7 +18,7 @@ const resolver_1 = require("./graphql/resolver/resolver");
 const cors_1 = __importDefault(require("cors"));
 const server_1 = require("@apollo/server");
 const schema_1 = require("./graphql/schema/schema");
-const default_1 = require("@apollo/server/plugin/landingPage/default");
+const server_plugin_landing_page_graphql_playground_1 = require("@apollo/server-plugin-landing-page-graphql-playground");
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
@@ -26,13 +26,7 @@ function startServer() {
             typeDefs: schema_1.typeDefs,
             resolvers: resolver_1.resolvers,
             plugins: [
-                // Install a landing page plugin based on NODE_ENV
-                process.env.NODE_ENV === 'production'
-                    ? (0, default_1.ApolloServerPluginLandingPageProductionDefault)({
-                        graphRef: 'my-graph-id@my-graph-variant',
-                        footer: false,
-                    })
-                    : (0, default_1.ApolloServerPluginLandingPageLocalDefault)({ footer: false }),
+                (0, server_plugin_landing_page_graphql_playground_1.ApolloServerPluginLandingPageGraphQLPlayground)()
             ],
         });
         app.use(express_1.default.json());
