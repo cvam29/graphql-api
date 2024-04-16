@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"node dist/server.js"
-    
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +23,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/lodash": "^4.17.0",
-    "@types/node": "^20.12.7"
+    "@types/node": "^20.12.7",
+    "pre-commit": "^1.2.2"
   }
 }
