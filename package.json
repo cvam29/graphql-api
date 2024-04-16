@@ -1,43 +1,29 @@
 {
-  "name": "node",
+  "name": "graphqlplayground",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon dist/index.js",
-    "build": "rimraf dist && tsc",
-    "ts.check": "tsc --project tsconfig.json",
-    "add-build": "git add dist"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"node dist/server.js"
+    
   },
-  "pre-commit": [
-    "ts.check",
-    "build",
-    "add-build"
-  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@apollo/server": "^4.10.2",
-    "@apollo/server-plugin-landing-page-graphql-playground": "^4.0.1",
-    "@commercetools/importapi-sdk": "^5.2.0",
-    "@commercetools/platform-sdk": "^7.6.0",
-    "@commercetools/sdk-client-v2": "^2.4.0",
-    "apollo-server-express": "^3.13.0",
+    "@apollo/server": "^4.10.3",
+    "@graphql-tools/executor-http": "^1.0.9",
+    "@graphql-tools/schema": "^10.0.3",
+    "@graphql-tools/wrap": "^10.0.5",
+    "axios": "^1.6.8",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "graphql": "^16.8.1",
-    "install": "^0.13.0",
-    "npm": "^10.5.0"
+    "lodash": "^4.17.21",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
-    "@types/dotenv": "^8.2.0",
-    "@types/express": "^4.17.21",
-    "@types/node-fetch": "^2.6.11",
-    "nodemon": "^3.1.0",
-    "pre-commit": "^1.2.2",
-    "rimraf": "^5.0.5",
-    "ts-node": "^10.9.2"
+    "@types/lodash": "^4.17.0",
+    "@types/node": "^20.12.7"
   }
 }

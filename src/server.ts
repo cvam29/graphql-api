@@ -1,39 +1,63 @@
-
-import { expressMiddleware } from '@apollo/server/express4';
-import express from "express";
-import {resolvers} from './graphql/resolver/resolver'
-import cors from 'cors'
 import { ApolloServer } from '@apollo/server';
-import { typeDefs } from './graphql/schema/schema';
-import {ApolloServerPluginLandingPageProductionDefault,ApolloServerPluginLandingPageLocalDefault} from '@apollo/server/plugin/landingPage/default'
-import { ApolloServerPluginLandingPageGraphQLPlayground } from '@apollo/server-plugin-landing-page-graphql-playground';
+import dotenv from 'dotenv'
+import { expressMiddleware } from '@apollo/server/express4';
+import express from 'express';
+import cors from 'cors';
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { buildHTTPExecutor } from "@graphql-tools/executor-http";
+import { schemaFromExecutor } from "@graphql-tools/wrap";
+import lodash from 'lodash';
+import { getAccessToken } from './service/CTtoken';
+import customerResolvers from './resolvers/customerResolver';
+import productResolvers from './resolvers/ProductsResolver';
 
 async function startServer() {
-    const app = express();
-    const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    introspection:true,
-    plugins: [
-        
-          ApolloServerPluginLandingPageGraphQLPlayground()
+    
+    dotenv.config();
+  
+    try {
+        const remoteSchemaURL = `${process.env.DEV_API_URL}/${process.env.DEV_PROJECT_KEY}/graphql`;
        
-        
-         
-      ]
-     
-    },
-    );
-    
-    app.use(express.json())
-    app.use(cors());
+        const accessToken = await getAccessToken();
+        console.log(accessToken);
+        const remoteExecutor = buildHTTPExecutor({
+            endpoint: remoteSchemaURL,
+            headers: {
+                'authorization': 'Bearer ' + accessToken
+            }
+        });
+        const subschema = {
+            schema: await schemaFromExecutor(remoteExecutor),
+            executor: remoteExecutor
+        };
+        const schema = makeExecutableSchema({
+            typeDefs: subschema.schema,
+            resolvers: lodash.merge(
+                customerResolvers,
+                productResolvers
+            )
+        });
+      
 
-    await server.start();
+        const server = new ApolloServer({
+            schema,
+    
+            introspection: true
+        });
 
-    app.use('/graphql', expressMiddleware(server))
-    
-    app.listen(8000,()=> console.log('Server started at port 8000:'));
-    
+        const app = express();
+        app.use(express.json());
+        app.use(cors());
+
+        await server.start();
+        app.use('/graphql', expressMiddleware(server,{context: async({ req }) => ({ req })}));
+
+        app.listen(8000, () => console.log('Server started at port 8000'));
+    } catch (error) {
+        console.log("Internal Server Error", error);
+    }
 }
 
-startServer();
+startServer().catch(error => {
+    console.error('Error starting the server:', error);
+});

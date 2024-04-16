@@ -1,40 +1,55 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const server_1 = require("@apollo/server");
+const dotenv_1 = __importDefault(require("dotenv"));
 const express4_1 = require("@apollo/server/express4");
 const express_1 = __importDefault(require("express"));
-const resolver_1 = require("./graphql/resolver/resolver");
 const cors_1 = __importDefault(require("cors"));
-const server_1 = require("@apollo/server");
-const schema_1 = require("./graphql/schema/schema");
-const server_plugin_landing_page_graphql_playground_1 = require("@apollo/server-plugin-landing-page-graphql-playground");
-function startServer() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const app = (0, express_1.default)();
-        const server = new server_1.ApolloServer({
-            typeDefs: schema_1.typeDefs,
-            resolvers: resolver_1.resolvers,
-            introspection: true,
-            plugins: [
-                (0, server_plugin_landing_page_graphql_playground_1.ApolloServerPluginLandingPageGraphQLPlayground)()
-            ]
+const schema_1 = require("@graphql-tools/schema");
+const executor_http_1 = require("@graphql-tools/executor-http");
+const wrap_1 = require("@graphql-tools/wrap");
+const lodash_1 = __importDefault(require("lodash"));
+const CTtoken_1 = require("./service/CTtoken");
+const customerResolver_1 = __importDefault(require("./resolvers/customerResolver"));
+const ProductsResolver_1 = __importDefault(require("./resolvers/ProductsResolver"));
+async function startServer() {
+    dotenv_1.default.config();
+    try {
+        const remoteSchemaURL = `${process.env.DEV_API_URL}/${process.env.DEV_PROJECT_KEY}/graphql`;
+        const accessToken = await (0, CTtoken_1.getAccessToken)();
+        console.log(accessToken);
+        const remoteExecutor = (0, executor_http_1.buildHTTPExecutor)({
+            endpoint: remoteSchemaURL,
+            headers: {
+                'authorization': 'Bearer ' + accessToken
+            }
         });
+        const subschema = {
+            schema: await (0, wrap_1.schemaFromExecutor)(remoteExecutor),
+            executor: remoteExecutor
+        };
+        const schema = (0, schema_1.makeExecutableSchema)({
+            typeDefs: subschema.schema,
+            resolvers: lodash_1.default.merge(customerResolver_1.default, ProductsResolver_1.default)
+        });
+        const server = new server_1.ApolloServer({
+            schema,
+            introspection: true
+        });
+        const app = (0, express_1.default)();
         app.use(express_1.default.json());
         app.use((0, cors_1.default)());
-        yield server.start();
-        app.use('/graphql', (0, express4_1.expressMiddleware)(server));
-        app.listen(8000, () => console.log('Server started at port 8000:'));
-    });
+        await server.start();
+        app.use('/graphql', (0, express4_1.expressMiddleware)(server, { context: async ({ req }) => ({ req }) }));
+        app.listen(8000, () => console.log('Server started at port 8000'));
+    }
+    catch (error) {
+        console.log("Internal Server Error", error);
+    }
 }
-startServer();
+startServer().catch(error => {
+    console.error('Error starting the server:', error);
+});
